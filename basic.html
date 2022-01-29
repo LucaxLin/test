@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./lib/js/jquery.min.js"></script>
+</head>
+
+<body>
+    <button id="get">get</button>
+    <button id="post">post</button>
+    <script>
+        $(function() {
+            $('#get').on('click', function() {
+                // $.get('http://liulongbin.top:3006/api/getbooks', function(res) {
+                //     console.log(res);
+                // })
+                $.ajax({
+                    type: 'GET',
+                    url: 'http://liulongbin.top:3006/api/getbooks',
+                    // data: {
+                    //     author: 'Cardi_B'
+                    // },
+                    success: function(res) {
+                        console.log(res);
+                    }
+                })
+            })
+            $('#post').on('click', function() {
+                $.post('http://liulongbin.top:3006/api/addbook', {
+                    bookname: 'WAP',
+                    author: 'Cardi_B',
+                    publisher: 'bitch'
+                }, function(res) {
+                    console.log(res);
+                })
+            })
+        })
+    </script>
+</body>
+
+</html>

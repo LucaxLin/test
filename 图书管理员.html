@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./lib/js/jquery.min.js"></script>
+    <link rel="stylesheet" href="./lib/css/bootstrap.min.css">
+    <style>
+        .panel-body .main {
+            display: flex;
+            justify-content: space-evenly;
+        }
+        
+        .input-group input {
+            width: 250px!important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">添加新图书</h3>
+            </div>
+            <div class="panel-body">
+                <form action="#" class="main">
+                    <div class="input-group">
+                        <div class="input-group-addon">书名</div>
+                        <input type="text" class="form-control" id="ipBookName" placeholder="请输入书名">
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">作者</div>
+                        <input type="text" class="form-control" id="ipAuthor" placeholder="请输入作者">
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">出版社</div>
+                        <input type="text" class="form-control" id="ipPublisher" placeholder="请输入出版社">
+                    </div>
+                    <div class="input-group">
+                        <button type="button" class="btn btn-primary addBook">添加</button>
+                    </div>
+            </div>
+            </form>
+        </div>
+
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>书名</th>
+                    <th>作者</th>
+                    <th>出版社</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="tb">
+
+            </tbody>
+        </table>
+
+    </div>
+    </div>
+
+
+
+    <script>
+        $(function() {
+            // get book list
+            function getBookList() {
+                $.get('http://www.liulongbin.top:3006/api/getbooks',
+                    function(res) {
+                        if (res.status == 200) {
+                            var rows = []
+                            $.each(res.data, function(i, ele) {
+                                rows.push("<tr><td class='index'>" + ele.id + "</td><td>" + ele.bookname + "</td><td>" + ele.author + "</td><td>" + ele.publisher + "</td><td><a href='javascript:;' class='del'>删除</a></td></tr>")
+                            })
+                            $('#tb').empty().append(rows.join(''))
+
+                        } else {
+                            return alert('somthing wrong')
+                        }
+                    })
+            }
+            getBookList()
+
+            // delete book
+            $('#tb').on('click', '.del', function(e) {
+                    $.get('http://www.liulongbin.top:3006/api/delbook', {
+                        id: $(this).parent().siblings('.index').text()
+                    }, function(res) {
+                        if (res.status !== 200) {
+                            return false
+                        } else {
+                            getBookList()
+                        }
+                    })
+                })
+                // 
+                //add book
+            $('.addBook').on('click', function() {
+                var ipBookName = $('#ipBookName').val();
+                var ipAuthor = $('#ipAuthor').val();
+                var ipPublisher = $('#ipPublisher').val()
+                if (ipBookName && ipAuthor) {
+                    if (ipPublisher) {
+                        $.post('http://www.liulongbin.top:3006/api/addbook',
+                            //'bookname=西游记&author=吴承恩&publisher=北京图书出版社'
+                            {
+                                bookname: ipBookName,
+                                author: ipAuthor,
+                                publisher: ipPublisher
+                            },
+                            function(res) {
+                                if (res.status == 201) {
+                                    getBookList()
+                                    $('#ipBookName').val('')
+                                    $('#ipAuthor').val('')
+                                    $('#ipPublisher').val('')
+
+                                } else {
+                                    alert(res.msg)
+                                }
+                            })
+
+                    }
+                }
+
+            })
+        })
+    </script>
+
+</body>
+
+</html>
